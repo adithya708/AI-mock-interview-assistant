@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Question {{ number }} | AI Mock Interview{% endblock %}
+{% block content %}
+<div class="question-top d-flex justify-content-between align-items-end mb-2"><div><p class="eyebrow mb-1">{{ subject }} INTERVIEW</p><h1 class="h2 mb-0">Question {{ number }} <span class="text-muted fw-normal">of {{ total }}</span></h1></div><span class="question-count">{{ number }}/{{ total }}</span></div>
+{% if source == 'fallback' %}<div class="alert alert-warning py-2" role="status">Gemini was unavailable, so fallback questions are being used. Check your API key and restart the app.</div>{% endif %}
+<div class="progress mb-4" role="progressbar" aria-label="Interview progress" aria-valuenow="{{ number }}" aria-valuemin="1" aria-valuemax="{{ total }}"><div class="progress-bar" style="width: {{ (number / total * 100)|round }}%"></div></div>
+<form method="post" id="question-form">
+    <section class="question-card"><h2>{{ item.question }}</h2><div class="options-list">{% for option in item.options %}<label class="option-row"><input type="radio" name="answer" value="{{ option }}" {% if selected_answer == option %}checked{% endif %}><span>{{ option }}</span></label>{% endfor %}</div></section>
+    {% if error %}<div class="alert alert-warning mt-3" role="alert">{{ error }}</div>{% endif %}
+    <div class="d-flex justify-content-between mt-4"><button class="btn btn-outline-secondary" type="submit" name="action" value="previous" {% if number == 1 %}disabled{% endif %}>← Previous</button><button class="btn btn-primary" type="submit" name="action" value="next">{% if number == total %}Finish Interview{% else %}Next Question →{% endif %}</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,42 @@
+:root { --ink: #17324d; --blue: #176b87; --mint: #d8f3e5; --paper: #f7fafb; --line: #d9e3e8; }
+body { background: var(--paper); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; min-height: 100vh; }
+.app-nav { background: var(--ink); padding: 1rem 0; }
+.nav-caption { color: #b9d6df; font-size: .9rem; }
+.hero-panel { max-width: 720px; padding: 5rem 1rem 4rem; }
+.hero-mark { background: var(--mint); border-radius: 50%; color: var(--blue); display: grid; font: bold 1.2rem Arial, sans-serif; height: 76px; margin: 0 auto 2rem; place-items: center; width: 76px; }
+.eyebrow { color: var(--blue); font: bold .76rem Arial, sans-serif; letter-spacing: .12em; }
+.profile-greeting { color: var(--blue); font: bold 1rem Arial, sans-serif; margin-bottom: .75rem; }
+h1 { font-size: clamp(2.3rem, 6vw, 4.5rem); line-height: 1.05; }
+.hero-panel .lead { max-width: 500px; }
+.btn { border-radius: 5px; font-family: Arial, sans-serif; font-weight: 700; }
+.btn-primary { background: var(--blue); border-color: var(--blue); }
+.btn-primary:hover { background: #11576e; border-color: #11576e; }
+.page-heading { margin-bottom: 2.25rem; }
+.page-heading h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); }
+.subject-card { background: white; border: 2px solid var(--line); border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; min-height: 205px; padding: 1.5rem; transition: border-color .2s, transform .2s; }
+.subject-card:hover, .subject-card:has(input:checked) { border-color: var(--blue); transform: translateY(-3px); }
+.subject-card input { opacity: 0; position: absolute; }
+.subject-icon { align-items: center; background: var(--mint); border-radius: 7px; color: var(--blue); display: flex; font: bold 1.1rem Arial, sans-serif; height: 48px; justify-content: center; margin-bottom: 1.5rem; width: 48px; }
+.subject-card strong { font-size: 1.5rem; }
+.subject-card small { color: #61717a; font: .95rem Arial, sans-serif; margin-top: .35rem; }
+.question-top h1, .question-card h2, .review-item h3 { font-family: Georgia, 'Times New Roman', serif; }
+.question-count { color: var(--blue); font: bold 1rem Arial, sans-serif; }
+.progress { background: #dfe9ed; height: 9px; }
+.progress-bar { background: var(--blue); }
+.question-card { background: white; border: 1px solid var(--line); border-radius: 8px; padding: clamp(1.3rem, 4vw, 2.5rem); }
+.question-card h2 { font-size: clamp(1.35rem, 3vw, 2rem); margin-bottom: 2rem; }
+.option-row { align-items: center; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; display: flex; font: 1rem Arial, sans-serif; margin: .75rem 0; padding: 1rem; }
+.option-row:hover, .option-row:has(input:checked) { background: #edf7f6; border-color: var(--blue); }
+.option-row input { accent-color: var(--blue); margin-right: .8rem; }
+.results-summary { background: var(--ink); border-radius: 8px; color: white; display: grid; gap: 1.5rem; grid-template-columns: repeat(4, 1fr); padding: 1.5rem; }
+.summary-label, .stat-box span { color: #a8c4cb; display: block; font: bold .7rem Arial, sans-serif; letter-spacing: .08em; margin-bottom: .35rem; }
+.results-summary strong { font-size: 1.25rem; }
+.stat-box { background: white; border-left: 5px solid; border-radius: 5px; padding: 1rem 1.25rem; }
+.stat-box.correct { border-color: #299a68; }.stat-box.incorrect { border-color: #d36b63; }
+.stat-box span { color: #61717a; }.stat-box strong { font-size: 2rem; }
+.review-item { align-items: flex-start; background: white; border-left: 5px solid; border-radius: 5px; display: flex; gap: 1rem; margin-bottom: .8rem; padding: 1.2rem; }
+.review-correct { border-color: #299a68; }.review-incorrect { border-color: #d36b63; }
+.review-number { align-items: center; background: #edf3f5; border-radius: 50%; display: flex; flex: 0 0 32px; font: bold 1rem Arial, sans-serif; height: 32px; justify-content: center; }
+.review-item h3 { font-size: 1.1rem; margin: 0 0 .8rem; }.review-item p { font: .9rem Arial, sans-serif; margin: .25rem 0; }.review-item p span { color: #61717a; font-weight: bold; }.status { font: .8rem Arial, sans-serif; margin-left: auto; white-space: nowrap; }
+.review-correct .status { color: #218052; }.review-incorrect .status { color: #b34c45; }
+@media (max-width: 700px) { .nav-caption { display: none; }.results-summary { grid-template-columns: repeat(2, 1fr); }.review-item { flex-wrap: wrap; }.status { margin-left: 48px; } }

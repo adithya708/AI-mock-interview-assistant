@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Home | AI Mock Interview Assistant{% endblock %}
+{% block content %}
+<section class="hero-panel text-center mx-auto">
+    <div class="hero-mark">AI</div>
+    <p class="eyebrow">TECHNICAL PRACTICE STUDIO</p>
+    <h1>AI Mock Interview Assistant</h1>
+    <p class="lead text-muted mx-auto">Practice dynamic technical interview questions with Gemini AI.</p>
+    <a class="btn btn-primary btn-lg px-4" href="{{ url_for('subjects') }}">Start Mock Interview <span aria-hidden="true">→</span></a>
+</section>
+{% endblock %}

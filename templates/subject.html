@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Select Subject | AI Mock Interview{% endblock %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">STEP 1 OF 3</p><h1>Choose your subject</h1><p class="text-muted">Select a topic to get five focused interview questions.</p></div>
+{% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+<form method="post" action="{{ url_for('start') }}" id="subject-form">
+    <div class="row g-4 mb-4">
+        {% for key, label, icon, description in [('python', 'Python', 'Py', 'Basics, data structures, and OOP'), ('java', 'Java', 'Jv', 'Classes, inheritance, and exceptions'), ('sql', 'SQL', 'DB', 'Queries, joins, and aggregation')] %}
+        <div class="col-md-4"><label class="subject-card w-100"><input type="radio" name="subject" value="{{ key }}" {% if selected == key %}checked{% endif %}><span class="subject-icon">{{ icon }}</span><strong>{{ label }}</strong><small>{{ description }}</small></label></div>
+        {% endfor %}
+    </div>
+    <button class="btn btn-primary px-4" type="submit">Start Interview <span aria-hidden="true">→</span></button>
+</form>
+{% endblock %}

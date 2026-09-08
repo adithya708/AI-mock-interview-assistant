@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Results | AI Mock Interview{% endblock %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">INTERVIEW COMPLETE</p><h1>Your results</h1><p class="text-muted">Here is your performance breakdown for {{ data.subject }}.</p></div>
+<section class="results-summary"><div><span class="summary-label">SUBJECT</span><strong>{{ data.subject }}</strong></div><div><span class="summary-label">SCORE</span><strong>{{ data.correct }} / {{ data.total }}</strong></div><div><span class="summary-label">PERCENTAGE</span><strong>{{ data.percentage }}%</strong></div><div><span class="summary-label">FEEDBACK</span><strong>{{ data.feedback }}</strong></div></section>
+<div class="stats-row row g-3 my-4"><div class="col-sm-6"><div class="stat-box correct"><span>Correct Answers</span><strong>{{ data.correct }}</strong></div></div><div class="col-sm-6"><div class="stat-box incorrect"><span>Incorrect Answers</span><strong>{{ data.incorrect }}</strong></div></div></div>
+<h2 class="h4 mb-3">Detailed answer review</h2>
+<div class="review-list">{% for item in data.review %}<article class="review-item {% if item.is_correct %}review-correct{% else %}review-incorrect{% endif %}"><div class="review-number">{{ loop.index }}</div><div class="flex-grow-1"><h3>{{ item.question }}</h3><p><span>Your answer:</span> {{ item.user_answer }}</p><p><span>Correct answer:</span> {{ item.answer }}</p></div><strong class="status">{% if item.is_correct %}Correct{% else %}Incorrect{% endif %}</strong></article>{% endfor %}</div>
+<div class="d-flex flex-wrap gap-2 mt-4"><a class="btn btn-primary" href="{{ url_for('download_pdf') }}">Download PDF Report ↓</a><a class="btn btn-outline-secondary" href="{{ url_for('restart') }}">Start New Interview</a></div>
+{% endblock %}
