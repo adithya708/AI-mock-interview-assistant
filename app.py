@@ -186,7 +186,7 @@ def question(number):
         answer = request.form.get("answer")
         valid_options = interview_questions[number - 1]["options"]
         if answer not in valid_options:
-            return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=5, selected_answer=answers.get(str(number)), source=session.get("question_source", "fallback"), error="Please choose an answer to continue.")
+            return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=5, selected_answer=answers.get(str(number)), source=session.get("question_source")), 400
         answers[str(number)] = answer
         session.modified = True
         if request.form.get("action") == "previous":
@@ -195,7 +195,7 @@ def question(number):
             return redirect(url_for("results"))
         return redirect(url_for("question", number=number + 1))
 
-    return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=5, selected_answer=answers.get(str(number)), source=session.get("question_source", "fallback"))
+    return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=5, selected_answer=answers.get(str(number)), source=session.get("question_source"))
 
 
 @app.route("/results")
@@ -218,15 +218,15 @@ def download_pdf():
     title_style = ParagraphStyle("ReportTitle", parent=styles["Title"], alignment=TA_CENTER, textColor=colors.HexColor("#17324d"), spaceAfter=16)
     small_style = ParagraphStyle("Small", parent=styles["BodyText"], fontSize=9, leading=12)
     story = [Paragraph("AI Mock Interview Assistant Report", title_style)]
-    summary = [["Subject", data["subject"]], ["Final Score", f"{data['correct']} / {data['total']}"], ["Correct Answers", str(data["correct"])], ["Incorrect Answers", str(data["incorrect"])], ["Percentage", f"{data['percentage']}%"], ["Performance Feedback", data["feedback"]]]
+    summary = [["Subject", data["subject"]], ["Final Score", f"{data['correct']} / {data['total']}"], ["Correct Answers", str(data["correct"])], ["Incorrect Answers", str(data["incorrect"])], ["Percentage", f"{data['percentage']}%"]]
     summary_table = Table(summary, colWidths=[1.7 * inch, 4.8 * inch])
-    summary_table.setStyle(TableStyle([("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#e8f0f5")), ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5df")), ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("PADDING", (0, 0), (-1, -1), 8)]))
+    summary_table.setStyle(TableStyle([("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#e8f0f5")), ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5df")), ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"), ("FONTSIZE", (0, 0), (0, -1), 10), ("ALIGN", (0, 0), (-1, -1), "CENTER"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
     story.extend([summary_table, Spacer(1, 18), Paragraph("Detailed Answer Review", styles["Heading2"])])
     rows = [["#", "Question", "User Answer", "Correct Answer", "Status"]]
     for index, item in enumerate(data["review"], 1):
         rows.append([str(index), Paragraph(item["question"], small_style), Paragraph(item["user_answer"], small_style), Paragraph(item["answer"], small_style), "Correct" if item["is_correct"] else "Incorrect"])
     review_table = Table(rows, colWidths=[0.3 * inch, 2.45 * inch, 1.35 * inch, 1.35 * inch, 0.85 * inch], repeatRows=1)
-    review_table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17324d")), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#cbd5df")), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("FONTSIZE", (0, 0), (-1, -1), 8), ("PADDING", (0, 0), (-1, -1), 6)] + [("BACKGROUND", (4, row), (4, row), colors.HexColor("#d8f3e5") if item["is_correct"] else colors.HexColor("#fde2e2")) for row, item in enumerate(data["review"], 1)]))
+    review_table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17324d")), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTSIZE", (0, 0), (-1, 0), 10), ("ALIGN", (0, 0), (-1, -1), "CENTER"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f0f4f7")])]))
     story.append(review_table)
     document.build(story)
     buffer.seek(0)
@@ -242,4 +242,5 @@ def restart():
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
