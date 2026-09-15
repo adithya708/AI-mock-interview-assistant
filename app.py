@@ -19,6 +19,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+QUESTION_COUNT = 10
 
 questions = {
     "python": [
@@ -27,6 +28,11 @@ questions = {
         {"question": "How do you access the value for key 'name' in dictionary person?", "options": ["person.name", "person['name']", "person->name", "person(name)"], "answer": "person['name']"},
         {"question": "Which special method initializes a new Python object?", "options": ["__start__", "__new__", "__init__", "__create__"], "answer": "__init__"},
         {"question": "What is the result of len([10, 20, 30])?", "options": ["2", "3", "10", "30"], "answer": "3"},
+        {"question": "Which symbol starts a comment in Python?", "options": ["//", "#", "--", "/*"], "answer": "#"},
+        {"question": "Which keyword creates a loop over an iterable?", "options": ["repeat", "for", "loop", "iterate"], "answer": "for"},
+        {"question": "What does a Python set store?", "options": ["Only duplicate values", "Unique values", "Key-value pairs", "Ordered characters"], "answer": "Unique values"},
+        {"question": "Which value represents the absence of a value in Python?", "options": ["null", "undefined", "None", "empty"], "answer": "None"},
+        {"question": "Which function displays output in Python?", "options": ["echo()", "write()", "display()", "print()"], "answer": "print()"},
     ],
     "java": [
         {"question": "Which method is the entry point of a Java application?", "options": ["start()", "main()", "run()", "init()"], "answer": "main()"},
@@ -34,6 +40,11 @@ questions = {
         {"question": "What is an object in Java?", "options": ["A class blueprint", "An instance of a class", "A package", "A compiler"], "answer": "An instance of a class"},
         {"question": "Which block handles an exception in Java?", "options": ["catch", "handle", "except", "error"], "answer": "catch"},
         {"question": "Polymorphism allows one interface to have what?", "options": ["Only one implementation", "Many implementations", "No implementation", "Only private methods"], "answer": "Many implementations"},
+        {"question": "Which keyword declares a constant-like variable by convention in Java?", "options": ["final", "constant", "static", "fixed"], "answer": "final"},
+        {"question": "Which collection does not allow duplicate elements?", "options": ["List", "Queue", "Set", "Array"], "answer": "Set"},
+        {"question": "Which operator compares primitive values in Java?", "options": ["=", "==", "equals", "compare"], "answer": "=="},
+        {"question": "What does JVM stand for?", "options": ["Java Variable Method", "Java Virtual Machine", "Java Verified Module", "Java Version Manager"], "answer": "Java Virtual Machine"},
+        {"question": "Which access modifier makes a member visible from any class?", "options": ["private", "protected", "public", "internal"], "answer": "public"},
     ],
     "sql": [
         {"question": "Which SQL command retrieves data from a database?", "options": ["GET", "SELECT", "FETCH", "RETRIEVE"], "answer": "SELECT"},
@@ -41,6 +52,11 @@ questions = {
         {"question": "Which JOIN returns matching rows from both tables?", "options": ["FULL JOIN", "LEFT JOIN", "INNER JOIN", "CROSS JOIN"], "answer": "INNER JOIN"},
         {"question": "Which clause groups rows with the same values?", "options": ["GROUP BY", "ORDER BY", "COMBINE BY", "COLLECT BY"], "answer": "GROUP BY"},
         {"question": "Which function counts rows in a query result?", "options": ["TOTAL()", "COUNT()", "SUM()", "NUMBER()"], "answer": "COUNT()"},
+        {"question": "Which command adds a new row to a table?", "options": ["ADD", "INSERT", "APPEND", "CREATE"], "answer": "INSERT"},
+        {"question": "Which command changes existing rows?", "options": ["MODIFY", "CHANGE", "UPDATE", "ALTER"], "answer": "UPDATE"},
+        {"question": "Which command removes rows from a table?", "options": ["REMOVE", "DROP", "DELETE", "CLEAR"], "answer": "DELETE"},
+        {"question": "Which keyword sorts query results?", "options": ["SORT BY", "ORDER BY", "GROUP BY", "ARRANGE"], "answer": "ORDER BY"},
+        {"question": "Which constraint uniquely identifies each row?", "options": ["FOREIGN KEY", "CHECK", "PRIMARY KEY", "INDEX"], "answer": "PRIMARY KEY"},
     ],
 }
 
@@ -48,7 +64,7 @@ subject_names = {"python": "Python", "java": "Java", "sql": "SQL"}
 
 
 def generate_questions(subject, previous_questions=None):
-    """Generate five MCQs with Gemini, falling back to the built-in set."""
+    """Generate ten MCQs with Gemini, falling back to the built-in set."""
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not api_key or api_key.startswith("replace-with-"):
         return questions[subject], "fallback"
@@ -56,7 +72,7 @@ def generate_questions(subject, previous_questions=None):
     previous_questions = previous_questions or []
     previous_text = "\n".join(f"- {item}" for item in previous_questions[-15:]) or "- None"
     prompt = f"""
-Create exactly 5 technical multiple-choice interview questions about {subject_names[subject]}.
+Create exactly {QUESTION_COUNT} technical multiple-choice interview questions about {subject_names[subject]}.
 Cover the subject's basics and common interview topics. Return only valid JSON as an array.
 This is a new interview attempt. Use fresh questions and vary the examples from previous attempts.
 Do not repeat or rephrase any of these previously used questions:
@@ -81,8 +97,8 @@ Variation token: {secrets.token_hex(8)}
                 ),
             )
             generated = json.loads(response.text.strip())
-            if not isinstance(generated, list) or len(generated) != 5:
-                raise ValueError("Gemini did not return exactly five questions")
+            if not isinstance(generated, list) or len(generated) != QUESTION_COUNT:
+                raise ValueError(f"Gemini did not return exactly {QUESTION_COUNT} questions")
             for item in generated:
                 if (
                     not isinstance(item, dict)
@@ -107,7 +123,7 @@ Variation token: {secrets.token_hex(8)}
 def current_questions():
     subject = session.get("subject")
     stored_questions = session.get("questions")
-    if subject not in questions or not isinstance(stored_questions, list) or len(stored_questions) != 5:
+    if subject not in questions or not isinstance(stored_questions, list) or len(stored_questions) != QUESTION_COUNT:
         return None
     return stored_questions
 
@@ -128,11 +144,11 @@ def interview_data():
         review.append({**item, "user_answer": user_answer, "is_correct": is_correct})
     total = len(review)
     percentage = round(correct / total * 100)
-    if correct == 5:
+    if correct == QUESTION_COUNT:
         feedback = "Excellent Performance 🎉"
-    elif correct == 4:
+    elif correct >= 8:
         feedback = "Very Good Performance 👏"
-    elif correct == 3:
+    elif correct >= 6:
         feedback = "Good Performance 👍"
     else:
         feedback = "Needs More Practice 📚"
@@ -178,7 +194,7 @@ def question(number):
     interview_questions = current_questions()
     if subject not in questions or not interview_questions:
         return redirect(url_for("subjects"))
-    if number < 1 or number > 5:
+    if number < 1 or number > QUESTION_COUNT:
         return redirect(url_for("question", number=1))
 
     answers = session.setdefault("answers", {})
@@ -186,22 +202,22 @@ def question(number):
         answer = request.form.get("answer")
         valid_options = interview_questions[number - 1]["options"]
         if answer not in valid_options:
-            return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=5, selected_answer=answers.get(str(number)), source=session.get("question_source")), 400
+            return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=QUESTION_COUNT, selected_answer=answers.get(str(number)), source=session.get("question_source")), 400
         answers[str(number)] = answer
         session.modified = True
         if request.form.get("action") == "previous":
             return redirect(url_for("question", number=max(1, number - 1)))
-        if number == 5:
+        if number == QUESTION_COUNT:
             return redirect(url_for("results"))
         return redirect(url_for("question", number=number + 1))
 
-    return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=5, selected_answer=answers.get(str(number)), source=session.get("question_source"))
+    return render_template("question.html", subject=subject_names[subject], item=interview_questions[number - 1], number=number, total=QUESTION_COUNT, selected_answer=answers.get(str(number)), source=session.get("question_source"))
 
 
 @app.route("/results")
 def results():
     data = interview_data()
-    if not data or len(session.get("answers", {})) != 5:
+    if not data or len(session.get("answers", {})) != QUESTION_COUNT:
         return redirect(url_for("question", number=1))
     return render_template("results.html", data=data)
 
@@ -209,7 +225,7 @@ def results():
 @app.route("/download-pdf")
 def download_pdf():
     data = interview_data()
-    if not data or len(session.get("answers", {})) != 5:
+    if not data or len(session.get("answers", {})) != QUESTION_COUNT:
         return redirect(url_for("question", number=1))
 
     buffer = BytesIO()
