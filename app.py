@@ -67,6 +67,7 @@ def generate_questions(subject, previous_questions=None):
     """Generate ten MCQs with Gemini, falling back to the built-in set."""
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not api_key or api_key.startswith("replace-with-"):
+        app.logger.warning("GEMINI_API_KEY is not set or empty in environment. Falling back to built-in questions.")
         return questions[subject], "fallback"
 
     previous_questions = previous_questions or []
@@ -86,7 +87,7 @@ Variation token: {secrets.token_hex(8)}
 """
     client = genai.Client(api_key=api_key)
     last_error = None
-    for model in ("gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.1-flash-lite"):
+    for model in ("gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.1-flash-lite"):
         try:
             response = client.models.generate_content(
                 model=model,
